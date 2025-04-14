@@ -1,0 +1,39 @@
+version: '3.4'
+services:
+
+  api:
+    build: 
+      context: .
+      dockerfile: docker/api/dockerfile
+
+    restart: always
+
+    env_file:
+      - .env
+
+    environment:
+      - POSTGRES_HOST=postgres
+
+    ports:
+      - 8000:8000
+    
+    command: [
+      "uvicorn", 
+      "--host", "0.0.0.0",
+      "--port", "8000"
+    ]
+
+    depends_on:
+      - postgres
+    
+  postgres:
+    container_name: postgres
+    build: 
+      context: .
+      dockerfile: docker/postgres/dockerfile
+
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB_NAME=dimatech_db
+      
