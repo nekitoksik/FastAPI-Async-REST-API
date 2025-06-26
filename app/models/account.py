@@ -7,7 +7,7 @@ class Account(Base):
     __tablename__ = "accounts"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    balance: Mapped[float] = mapped_column(Float, nullable=False)
+    balance: Mapped[float] = mapped_column(Float, default=0, nullable=False)
 
     user = relationship("User", back_populates="accounts")
-    payments = relationship("Payment", back_populates="account")
+    transactions = relationship("Transaction", back_populates="account")

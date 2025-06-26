@@ -1,39 +1,35 @@
-version: '3.4'
+version: '3.8'
+
 services:
-
-  api:
-    build: 
+  db:
+    build:
       context: .
-      dockerfile: docker/api/dockerfile
-
-    restart: always
-
-    env_file:
-      - .env
-
+      dockerfile: docker/postgres/Dockerfile
     environment:
-      - POSTGRES_HOST=postgres
-
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app_db
     ports:
-      - 8000:8000
-    
-    command: [
-      "uvicorn", 
-      "--host", "0.0.0.0",
-      "--port", "8000"
-    ]
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-    depends_on:
-      - postgres
-    
-  postgres:
-    container_name: postgres
-    build: 
-      context: .
-      dockerfile: docker/postgres/dockerfile
-
+  app:
+    build: .
     environment:
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB_NAME=dimatech_db
-      
+      DATABASE_URL: postgresql://app_user:app_password@db:5432/app_db
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:

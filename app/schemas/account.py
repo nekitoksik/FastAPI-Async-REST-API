@@ -1,11 +1,14 @@
 from pydantic import BaseModel
 
-class Account(BaseModel):
+class SAccount(BaseModel):
     id: int
     user_id: int
     balance: float
 
-class AccountCreate(BaseModel):
+    class Config:
+        from_attributes = True
+
+class SAccountCreate(BaseModel):
     user_id: int
     balance: float = 0
 
