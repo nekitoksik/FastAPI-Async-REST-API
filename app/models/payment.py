@@ -12,5 +12,5 @@ class Payment(Base):
     amount: Mapped[float] = mapped_column(Float, nullable=False)
     signature: Mapped[str] = mapped_column(String(64), nullable=False)
 
-    user: Mapped["User"] = relationship(back_populates="payments")
-    account: Mapped["Account"] = relationship(back_populates="payments")
+    user = relationship("User", back_populates="payments")
+    account = relationship("Account", back_populates="payments")

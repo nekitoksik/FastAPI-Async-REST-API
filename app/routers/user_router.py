@@ -1,9 +1,8 @@
 from fastapi import APIRouter, HTTPException, Response
 
-from app.models import Users
 from app.services.user.service import UserService
 from app.schemas.user import SUser, SUserCreate, SUserLogin
-from app.services.user.auth import get_password_hash, verify_password, create_access_token, verify_user
+from app.services.user.auth import get_password_hash, create_access_token, verify_user
 
 router = APIRouter(
     prefix="/users",
@@ -39,7 +38,6 @@ async def register_user(user_data: SUserCreate):
 
 @router.post("/login")
 async def login_user(response: Response, user_data: SUserLogin):
-    
     user = await verify_user(user_data.email, user_data.password)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")

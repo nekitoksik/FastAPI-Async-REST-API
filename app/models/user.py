@@ -1,5 +1,7 @@
 from app.database import Base
 from sqlalchemy import Boolean, Integer, String
+from app.models.account import Account
+from app.models.payment import Payment 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class User(Base):
@@ -10,6 +12,6 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(300), nullable=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    accounts: Mapped[list["Account"]] = relationship(back_populates="user")
-    payments: Mapped[list["Payment"]] = relationship(back_populates="user")
+    accounts = relationship("Account", back_populates="user")
+    payments = relationship("Payment", back_populates="user")
 

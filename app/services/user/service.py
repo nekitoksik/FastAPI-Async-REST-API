@@ -15,11 +15,11 @@ class UserService():
             query = select(cls.model).filter_by(id=user_id)
             result = await session.execute(query)
 
-            user_data = result.fetchone()
+            user_data = result.scalar_one_or_none()
             if not user_data:
                 raise HTTPException(status_code=404, detail="Пользователь не найден")
             
-            return SUser(user_data)
+            return SUser.model_validate(user_data)
     
     @classmethod
     async def get_one_user(cls, **data) -> SUser:
