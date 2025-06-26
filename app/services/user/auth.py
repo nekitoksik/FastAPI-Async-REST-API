@@ -32,7 +32,7 @@ def create_access_token(data: dict) -> str:
     return encoded_jwt
 
 async def verify_user(email: EmailStr, password: str) -> User:
-    existing_user = await UserService.get_one_user(email)
+    existing_user = await UserService.get_one_user(email=email)
 
     if not existing_user and not verify_password(password, existing_user.password):
         raise HTTPException(status_code=404, detail="Пароли не совпадают")
