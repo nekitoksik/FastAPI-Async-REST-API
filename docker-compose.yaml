@@ -2,34 +2,43 @@ version: '3.8'
 
 services:
   db:
-    build:
-      context: .
-      dockerfile: docker/postgres/Dockerfile
+    image: postgres:15.0
+    container_name: dimatech_db
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: app_db
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
       timeout: 5s
       retries: 5
 
   app:
-    build: .
-    environment:
-      DATABASE_URL: postgresql://app_user:app_password@db:5432/app_db
+    image: dimatech_backend
+    build:
+      context: .
+      dockerfile: ./docker/api/Dockerfile
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      ALGORITHM: ${ALGORITHM}
+      SECRET_KEY: ${SECRET_KEY}
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
 
 volumes:
   postgres_data:
